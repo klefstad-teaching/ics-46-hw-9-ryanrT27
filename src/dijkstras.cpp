@@ -31,7 +31,7 @@ vector<int> dijkstra_shortest_path(const Graph &G, int source, vector<int>& prev
     vector<int> distance(n_verts, INF);
     //keeps track of nodes visited
     vector<bool> been_visited(n_verts, false);
-    // keeps track of shorted path by storing predecessor, so start with -1
+    // keeps track of shortest path by storing predecessor, so start with -1
     previous.assign(n_verts, -1);
 
     // stores PAIRS (Dist, vertex) as they get sorted by distance
