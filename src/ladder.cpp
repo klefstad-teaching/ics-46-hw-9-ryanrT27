@@ -17,27 +17,27 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
     int charnum_difference = 0;
     int i = 0, j = 0;
 
-    if (w1size == w2size){
-        for(; i < w1size; ++i){
-            if(str1[i] != str2[i]) ++charnum_difference;
-            if (charnum_difference > d) return false;
-        }
-    }
-    else {
-        while (i < w1size && j < w2size){
-            if (str1[i] != str2[j]) {
-                ++charnum_difference;
-                if (charnum_difference > d) return false;
-                if (w1size > w2size) ++i; //skip whichever word is longer after finding a mismatch
-                else {++j;}
-            }
-            else{
+    while (i < w1size && j < w2size){
+        if (str1[i] != str2[j]) {
+            ++charnum_difference;
+            if (charnum_difference > d) return false; // if difference greater than constraint d
+            if (w1size > w2size) ++i; //if the first word is longer it has a char not present in str2, skip curr char 
+            else if (w2size > w1size) ++j; // if second longer, skip curr char. Skips invalid char and compares next 
+            else {
                 ++i;
                 ++j;
+                //same length increment both
             }
         }
-        if (i < w1size || j < w2size) ++charnum_difference;
+        else{ // accounts for curr chars being the same
+            ++i;
+            ++j;
+        }
     }
+    // once while loop condition is broken, there can still be remaining characters
+    // increment to account for whatever is left
+    if (i < w1size || j < w2size) ++charnum_difference;
+    
     return charnum_difference <= d;
 }
 bool is_adjacent(const string& word1, const string& word2) {
@@ -48,18 +48,20 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
         error(begin_word, end_word, "Words cannot be equal.");
         return {};
     }
-    //start word ladder q
+    //start word ladder q, using BFS
     queue<vector<string>> word_ladder;
     word_ladder.push({begin_word});
-    // create set of strings visited
+    // create set of strings visited, container that stores elements in order
     set<string> been_visited;
     been_visited.insert(begin_word);
 
+    //bfs looks for all
     while (!word_ladder.empty()){
         vector<string> lad = word_ladder.front();
         word_ladder.pop();
         string last_word = lad.back();
         for (const string& word : word_list) {
+            //check adjacency and if been visited
             if (is_adjacent(last_word, word) && been_visited.find(word) == been_visited.end()){
                 been_visited.insert(word);
                 vector<string> new_ladder = lad;
